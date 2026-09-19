@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Lexable</title>
+  <desc id="desc">Lexable Accessibility mark by Bertoli Studios</desc>
+  <rect width="128" height="128" rx="28" fill="#0284c7" />
+  <g fill="#fff" stroke="#fff" stroke-miterlimit="10" stroke-width="0.25" transform="translate(21.5 24) scale(3.3)">
+    <rect x="19.18" y="5.87" width="2.29" height="10.18" transform="translate(5.11 28.33) rotate(-77.12)" />
+    <rect x="17.44" y="12.53" width="2.28" height="10.18" transform="translate(-5.8 9.8) rotate(-25.71)" />
+    <rect x="7.19" y="19.26" width="10.18" height="2.28" transform="translate(-11.43 22.62) rotate(-64.3)" />
+    <rect x="1.08" y="16.07" width="10.19" height="2.29" transform="translate(-3.68 1.81) rotate(-12.86)" />
+    <rect x="3.73" y="5.37" width="2.28" height="10.18" transform="translate(-6.35 7.75) rotate(-51.45)" />
+    <rect x="8.2" y=".13" width="2.28" height="10.19" />
+    <rect x="11.12" y="4.3" width="10.18" height="2.28" transform="translate(.14 11.3) rotate(-38.6)" />
+  </g>
+</svg>

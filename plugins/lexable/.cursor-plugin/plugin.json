@@ -1,0 +1,24 @@
+{
+  "name": "lexable",
+  "displayName": "Lexable Accessibility",
+  "version": "1.0.0",
+  "description": "Build and review accessible web interfaces with WCAG-focused rules, audits, remediation guidance, and accessibility workflows directly in Cursor.",
+  "author": {
+    "name": "Bertoli Studios",
+    "email": "info@lex-able.com"
+  },
+  "homepage": "https://www.lex-able.com",
+  "repository": "https://github.com/bertolistudios-maker/lexable-cursor",
+  "license": "MIT",
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "wcag-2.2",
+    "web-accessibility",
+    "frontend",
+    "react",
+    "nextjs"
+  ],
+  "logo": "assets/logo.svg"
+}

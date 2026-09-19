@@ -1,0 +1,37 @@
+{
+  "name": "@bertolistudios/lexable-cursor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lexable Accessibility — Cursor Marketplace plugin by Bertoli Studios.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "validate": "node scripts/validate-template.mjs",
+    "test": "node --test tests/*.test.mjs && node scripts/validate-template.mjs",
+    "lexable": "node plugins/lexable/src/cli.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bertolistudios-maker/lexable-cursor.git"
+  },
+  "homepage": "https://www.lex-able.com",
+  "author": {
+    "name": "Bertoli Studios",
+    "email": "info@lex-able.com"
+  },
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "wcag-2.2",
+    "web-accessibility",
+    "frontend",
+    "react",
+    "nextjs",
+    "cursor",
+    "plugin"
+  ]
+}

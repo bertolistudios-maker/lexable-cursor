@@ -1,0 +1,16 @@
+---
+description: Prefer native semantic HTML instead of generic elements with compensatory ARIA
+alwaysApply: false
+globs:
+  - "**/*.{html,htm,js,jsx,ts,tsx,vue,svelte,mdx}"
+---
+
+Lexable semantic-html:
+
+- Use the native element that already has the needed role: button, a[href], input, textarea, select, label, nav, main, header, footer, aside, section, h1–h6, ul/ol/li, table, dialog.
+- Do not use `<div role="button">` or `<span role="link">` when `<button>` or `<a href>` can be used.
+- Headings must follow document structure. Do not fake headings with styled divs or bold text alone.
+- Lists of navigation links belong in lists inside nav.
+- Landmark elements should not be duplicated without distinguishing names.
+- Keep one main landmark.
+- If a custom component is required, it must still expose the correct name, role, value, keyboard behavior, and focus. Treat that as runtime verification required unless the primitive is a native element.

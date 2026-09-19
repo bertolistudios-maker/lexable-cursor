@@ -1,0 +1,16 @@
+---
+description: Keyboard operability, focus management, tab order, and keyboard traps
+alwaysApply: false
+globs:
+  - "**/*.{html,htm,css,js,jsx,ts,tsx,vue,svelte,mdx}"
+---
+
+Lexable keyboard-accessibility:
+
+- Every mouse-only control is a potential issue against 2.1.1 until keyboard operation is verified.
+- Native button, link, and form controls are keyboard operable; clickable divs are not, unless key handlers, role, tabindex, and focus styles are all present. Prefer native controls.
+- Do not use positive tabindex. Keep tab order in DOM order (2.4.3).
+- Interactive elements must be reachable and must not trap focus (2.1.2). Modals need a verified close path and focus return. Mark keyboard traps as runtime verification required.
+- Focus must be visible (2.4.7). Do not remove outline unless a clearly visible :focus-visible replacement exists. Computed visibility is runtime verification required.
+- Focused content must not be entirely hidden by sticky headers, cookie banners, or drawers (2.4.11). That is runtime verification required.
+- Skip-to-content links, if present, must be keyboard reachable. Bypass blocks cannot be fully proven statically.

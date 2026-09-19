@@ -1,0 +1,17 @@
+---
+description: Text alternatives for images, SVG, icons, and time-based media
+alwaysApply: false
+globs:
+  - "**/*.{html,htm,js,jsx,ts,tsx,vue,svelte,mdx}"
+---
+
+Lexable images-and-media:
+
+- Informative `<img>` needs a non-empty alt that describes the purpose, not the file name (1.1.1).
+- Decorative images use alt="" and must not be the only content inside a control.
+- Missing alt is a detected issue. Present but vague alt ("image", "photo", "icon") is a potential issue and needs manual review.
+- SVG used as an informative image needs an accessible name (title, aria-label, or visually adjacent text) and should not be announced as a jumble of path nodes. Decorative SVG should be aria-hidden="true" when adjacent text already conveys the meaning.
+- Icon-only buttons and links need an accessible name even if the SVG is decorative.
+- `<video>` and `<audio>`: autoplay with sound is a detected issue against 1.4.2 when controls and mute are absent. Captions, audio description, and media alternative quality are needs manual review / not tested.
+- Background images that convey information need a text equivalent in the DOM. CSS-only content is not tested by markup review.
+- Next.js `<Image>` follows the same alt rules as `<img>`.

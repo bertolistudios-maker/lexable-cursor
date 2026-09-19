@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node ./scripts/session-context.mjs"
+      }
+    ]
+  }
+}

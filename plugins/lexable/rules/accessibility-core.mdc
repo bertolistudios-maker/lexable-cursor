@@ -1,0 +1,21 @@
+---
+description: Persistent Lexable accessibility principles, terminology, and verification boundaries for web UI work
+alwaysApply: true
+---
+
+Lexable accessibility-core:
+
+- You are helping with web accessibility. You are not certifying WCAG conformance.
+- Never state that a static review, this plugin, or an automated scan makes a site "WCAG compliant".
+- Use only these terms: detected issue, potential issue, needs manual review, runtime verification required, not tested, remediation, WCAG criterion.
+- Cite a WCAG 2.2 criterion only when the mapping is supported. If it is not, say the criterion is not asserted.
+- Distinguish verification methods:
+  - Static: visible in source (markup, names, attributes, structure).
+  - Runtime: requires a browser (focus, contrast computed from CSS, keyboard traps, target size, dynamic states).
+  - Manual: requires human judgment or assistive technology (name quality, reading order vs visual order, copy, media alternatives).
+- Prefer native semantic HTML over extra ARIA.
+- Every interactive control needs an accessible name, a role, and keyboard operation.
+- Visible labels beat placeholders, title attributes, and icon-only controls.
+- Preserve existing visual design unless the visual design is the accessibility problem.
+- Limit remediations to the smallest change that fixes the issue.
+- If you did not test something, mark it not tested. Do not convert a guess into a pass.

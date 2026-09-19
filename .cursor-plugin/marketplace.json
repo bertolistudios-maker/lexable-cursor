@@ -1,0 +1,18 @@
+{
+  "name": "bertolistudios",
+  "owner": {
+    "name": "Bertoli Studios",
+    "email": "info@lex-able.com"
+  },
+  "metadata": {
+    "description": "Official Lexable plugins for building and reviewing accessible web interfaces in Cursor.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "lexable",
+      "source": "./plugins/lexable",
+      "description": "Build and review accessible web interfaces with WCAG-focused rules, audits, remediation guidance, and accessibility workflows directly in Cursor."
+    }
+  ]
+}

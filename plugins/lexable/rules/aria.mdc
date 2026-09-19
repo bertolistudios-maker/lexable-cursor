@@ -1,0 +1,19 @@
+---
+description: Use ARIA only when native HTML cannot express the same semantics
+alwaysApply: false
+globs:
+  - "**/*.{html,htm,js,jsx,ts,tsx,vue,svelte,mdx}"
+---
+
+Lexable aria:
+
+Prefer native HTML semantics over unnecessary ARIA.
+
+- Do not add role, aria-* , or tabindex to a native element that already exposes the correct semantics.
+- If you use ARIA, follow the required states, properties, and keyboard pattern for that role. Incomplete ARIA is worse than none.
+- aria-label overrides accessible names from content. Do not use it to hide a visible label that should remain the name (2.5.3 Label in Name).
+- aria-labelledby and aria-describedby must point at existing ids. Broken references are a detected issue for 4.1.2.
+- aria-hidden="true" must not wrap focusable content.
+- Live regions (aria-live, role="status", role="alert") are for status messages (4.1.3). Do not mark static content as live.
+- role="button" on a div still requires keyboard support, a name, and focus. Prefer `<button>`.
+- Do not use ARIA as a workaround for invalid markup (for example role="list" on a div of divs) when a real list is possible.

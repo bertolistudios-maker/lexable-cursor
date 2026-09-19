@@ -1,0 +1,30 @@
+import { authorizedGet, fetchDiscovery, LexableBackendUnavailable } from "./client.mjs";
+
+export function getLiveProvider(config) {
+  return {
+    kind: "live",
+    async discover() {
+      return fetchDiscovery(config);
+    },
+    async getCurrentUser(accessToken, discovery) {
+      return authorizedGet(discovery.document.userinfo_endpoint, accessToken);
+    },
+    async getSubscription(accessToken, discovery) {
+      return authorizedGet(discovery.document.subscription_endpoint, accessToken);
+    },
+    async getEntitlements(accessToken, discovery) {
+      const body = await authorizedGet(discovery.document.entitlements_endpoint, accessToken);
+      if (!Array.isArray(body?.capabilities)) {
+        throw new LexableBackendUnavailable(
+          "Lexable entitlements endpoint did not return a capabilities array. Access cannot be granted from local plan names."
+        );
+      }
+      return body;
+    },
+    async remoteScan() {
+      throw new LexableBackendUnavailable(
+        "Lexable remote scan is not implemented in this plugin until the backend publishes a scan endpoint in the discovery document."
+      );
+    },
+  };
+}

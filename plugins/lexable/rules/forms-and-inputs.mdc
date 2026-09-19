@@ -1,0 +1,16 @@
+---
+description: Labels, accessible names, instructions, errors, required fields, and autocomplete for forms
+alwaysApply: false
+globs:
+  - "**/*.{html,htm,js,jsx,ts,tsx,vue,svelte,mdx}"
+---
+
+Lexable forms-and-inputs:
+
+- Every input, select, and textarea needs a visible label that is programmatically associated (for/id or wrapping label). Placeholder is not a label (3.3.2, 4.1.2, 1.3.1).
+- Required fields must be indicated in text, not by color alone. aria-required or required can supplement, not replace, the visible indication.
+- Error messages must identify the field in text and, where possible, be tied with aria-describedby or aria-errormessage (3.3.1). aria-invalid is not a complete error message.
+- Instructions needed to complete a field must be available before submission.
+- For personal data fields (name, email, username, password, organization, street, city, country, postal code, phone, credit-card fields), set autocomplete to the appropriate token (1.3.5) when the field collects that data.
+- Do not disable paste on password or one-time-code fields. Accessible authentication is not fully testable statically; mark related flows needs manual review.
+- Group related radios and checkboxes with fieldset and legend.
