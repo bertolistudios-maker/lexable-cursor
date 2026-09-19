@@ -1,4 +1,33 @@
-import { can, CAPABILITY_CATALOG } from "./lexable/capabilities.mjs";
+import { can, CAPABILITY_CATALOG, describeCapability } from "./lexable/capabilities.mjs";
+
+export class LexableNotEntitled extends Error {
+  constructor(capability, status) {
+    super(formatNotEntitled(capability, status));
+    this.name = "LexableNotEntitled";
+    this.code = "NOT_ENTITLED";
+    this.capability = capability;
+    this.status = status;
+  }
+}
+
+export function formatNotEntitled(capability, status = {}) {
+  const item = describeCapability(capability);
+  const lines = ["LEXABLE", "", "NOT ENTITLED", ""];
+  lines.push(`This command requires: ${item.label} (${capability}).`);
+  lines.push("");
+  if (!status.authenticated) {
+    lines.push("You are not signed in.");
+    lines.push("Run /lexable-login. The browser opens Lexable: sign in, or create an account if you do not have one.");
+  } else {
+    lines.push(`Signed in as ${status.account?.email || status.account?.id || "your Lexable account"}.`);
+    lines.push(`Plan: ${status.plan || "unknown"} (${status.subscriptionStatus || "unknown"}).`);
+    lines.push("Plugin features follow the same Lexable plan as the dashboard. Buy or change the plan there, then run /lexable-status.");
+  }
+  lines.push("");
+  lines.push(`Register: ${status.registerUrl || "https://app.lex-able.com/register"}`);
+  lines.push(`Billing: ${status.billingUrl || "https://app.lex-able.com/billing"}`);
+  return lines.join("\n");
+}
 
 export function formatStatus(status) {
   const lines = [];
@@ -11,6 +40,10 @@ export function formatStatus(status) {
     lines.push("Not authenticated.");
     lines.push("");
     lines.push("Run /lexable-login to connect your Lexable account.");
+    lines.push("If you do not have an account, the same browser flow lets you register on Lexable.");
+    lines.push("Plans are purchased on the Lexable dashboard, same as using Lexable on the web.");
+    lines.push(`Register: ${status.registerUrl || "https://app.lex-able.com/register"}`);
+    lines.push(`Billing: ${status.billingUrl || "https://app.lex-able.com/billing"}`);
     if (!status.developmentMode && !status.apiBaseUrlConfigured) {
       lines.push("");
       lines.push("Real browser login requires the Lexable backend discovery document.");
@@ -24,6 +57,8 @@ export function formatStatus(status) {
     lines.push("");
     lines.push("Lexable account:");
     lines.push("✗ Authentication");
+    lines.push("✗ Accessibility audit");
+    lines.push("✗ Accessibility remediation");
     lines.push("✗ Lexable scan");
     lines.push("✗ Advanced reports");
     return lines.join("\n");
@@ -43,6 +78,9 @@ export function formatStatus(status) {
     const suffix = item.requiresBackend ? " (requires Lexable backend)" : "";
     lines.push(`${ok ? "✓" : "✗"} ${item.label}${ok && item.requiresBackend ? suffix : ""}`);
   }
+  lines.push("");
+  lines.push("Plans are the same as the Lexable dashboard. Buy or change them there.");
+  lines.push(`Billing: ${status.billingUrl || "https://app.lex-able.com/billing"}`);
   if (status.warning) {
     lines.push("");
     lines.push(status.warning);

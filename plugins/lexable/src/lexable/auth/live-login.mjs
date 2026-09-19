@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import { fetchDiscovery, LexableBackendUnavailable, authorizedGet } from "../api/client.mjs";
+import { PLUGIN_VERSION } from "../config.mjs";
 import { openSystemBrowser } from "./browser-login.mjs";
 import { authorizationUrl, generatePkce } from "./pkce.mjs";
 
@@ -70,7 +71,7 @@ export async function exchangeAuthorizationCode(tokenEndpoint, { clientId, code,
       headers: {
         "content-type": "application/x-www-form-urlencoded",
         accept: "application/json",
-        "user-agent": "lexable-cursor-plugin/1.1.0",
+        "user-agent": `lexable-cursor-plugin/${PLUGIN_VERSION}`,
       },
       body,
     });

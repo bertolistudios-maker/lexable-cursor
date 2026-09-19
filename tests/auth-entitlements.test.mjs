@@ -22,6 +22,9 @@ test("unauthenticated has only local capabilities", async () => {
   assert.equal(await client.can("accessibility.audit"), false);
   assert.equal(await client.can("accessibility.fix"), false);
   assert.equal(await client.can("lexable.remote_scan"), false);
+  assert.match(status.billingUrl, /\/billing$/);
+  assert.match(status.registerUrl, /\/register$/);
+  await assert.rejects(() => client.assertCan("accessibility.audit"), /NOT ENTITLED/);
 });
 
 test("dev login personas: free ≠ pro ≠ agency, expired ≠ active", async () => {
@@ -55,6 +58,7 @@ test("dev login personas: free ≠ pro ≠ agency, expired ≠ active", async ()
   assert.equal(expiredStatus.subscriptionStatus, "expired");
   assert.equal(await expired.can("accessibility.audit"), false);
   assert.equal(await expired.can("lexable.remote_scan"), false);
+  await assert.rejects(() => expired.assertCan("accessibility.audit"), /dashboard/);
 });
 
 test("can() uses entitlements array, not plan strings", () => {

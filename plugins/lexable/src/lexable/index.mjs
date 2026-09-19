@@ -1,12 +1,13 @@
-import { loadConfig } from "./config.mjs";
+import { loadConfig, PLUGIN_VERSION } from "./config.mjs";
 import { login, logout, getSessionSnapshot } from "./auth/index.mjs";
 import { can, getEntitlements, getStatus, getSubscription } from "./subscription/index.mjs";
 import { getLiveProvider } from "./api/live-provider.mjs";
 import { authorizedPost, fetchDiscovery } from "./api/client.mjs";
+import { LexableNotEntitled } from "../format.mjs";
 
 export async function createLexableClient(env = process.env) {
   const config = loadConfig(env);
-  return {
+  const client = {
     config,
     login: (options) => login(config, options),
     logout: () => logout(config),
@@ -15,6 +16,12 @@ export async function createLexableClient(env = process.env) {
     getEntitlements: () => getEntitlements(config),
     getStatus: () => getStatus(config),
     can: async (capability) => can(await getEntitlements(config), capability),
+    assertCan: async (capability) => {
+      if (await client.can(capability)) {
+        return;
+      }
+      throw new LexableNotEntitled(capability, await client.getStatus());
+    },
     track: async (event) => {
       const session = await getSessionSnapshot(config);
       if (!session.authenticated || session.mock || !session.tokens?.access_token) {
@@ -27,7 +34,7 @@ export async function createLexableClient(env = process.env) {
         }
         return authorizedPost(discovery.document.events_endpoint, session.tokens.access_token, {
           event,
-          plugin_version: "1.1.0",
+          plugin_version: PLUGIN_VERSION,
         });
       } catch {
         return { ok: false, skipped: true };
@@ -64,4 +71,5 @@ export async function createLexableClient(env = process.env) {
       }
     },
   };
+  return client;
 }

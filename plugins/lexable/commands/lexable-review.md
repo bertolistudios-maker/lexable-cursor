@@ -9,7 +9,8 @@ Final accessibility review before commit or pull request.
 
 ## Steps
 
-1. Follow the wcag-reviewer skill.
+1. Check entitlements. Basic review is available after `/lexable-login` with a Lexable account. Advanced review requires `accessibility.review.advanced` (Pro or Agency on the Lexable dashboard). If the user asked for an advanced review and `can(accessibility.review.advanced)` is false, say so and send them to dashboard billing. Do not invent a pass.
+2. Follow the wcag-reviewer skill.
 2. Review the current diff if one exists; otherwise review the files the user named or the local static findings plus surrounding source.
 3. Output:
 

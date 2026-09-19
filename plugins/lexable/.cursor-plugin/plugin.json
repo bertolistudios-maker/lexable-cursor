@@ -1,7 +1,7 @@
 {
   "name": "lexable",
   "displayName": "Lexable Accessibility",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Build and review accessible web interfaces with WCAG-focused rules, audits, remediation guidance, and accessibility workflows directly in Cursor.",
   "author": {
     "name": "Bertoli Studios",

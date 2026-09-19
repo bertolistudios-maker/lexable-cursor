@@ -1,3 +1,5 @@
+import { PLUGIN_VERSION } from "../config.mjs";
+
 export class LexableBackendUnavailable extends Error {
   constructor(message, details = {}) {
     super(message);
@@ -22,7 +24,7 @@ export async function fetchDiscovery(config) {
       method: "GET",
       headers: {
         accept: "application/json",
-        "user-agent": "lexable-cursor-plugin/1.1.0",
+        "user-agent": `lexable-cursor-plugin/${PLUGIN_VERSION}`,
       },
     });
   } catch (error) {
@@ -64,7 +66,7 @@ export async function authorizedGet(url, accessToken) {
     headers: {
       accept: "application/json",
       authorization: `Bearer ${accessToken}`,
-      "user-agent": "lexable-cursor-plugin/1.1.0",
+      "user-agent": `lexable-cursor-plugin/${PLUGIN_VERSION}`,
     },
   });
   if (!response.ok) {
@@ -82,7 +84,7 @@ export async function authorizedPost(url, accessToken, body = {}) {
       accept: "application/json",
       "content-type": "application/json",
       authorization: `Bearer ${accessToken}`,
-      "user-agent": "lexable-cursor-plugin/1.1.0",
+      "user-agent": `lexable-cursor-plugin/${PLUGIN_VERSION}`,
     },
     body: JSON.stringify(body),
   });

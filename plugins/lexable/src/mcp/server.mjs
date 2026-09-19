@@ -2,14 +2,14 @@
 
 import { createLexableClient } from "../lexable/index.mjs";
 import { CAPABILITY_CATALOG } from "../lexable/capabilities.mjs";
-import { formatAudit, formatStatus } from "../format.mjs";
+import { formatAudit, formatStatus, LexableNotEntitled } from "../format.mjs";
 import { auditPaths } from "../audit/local-audit.mjs";
+import { PLUGIN_VERSION } from "../lexable/config.mjs";
+
+const SUPPORTED_PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26", "2024-11-05"];
 
 function writeMessage(message) {
-  const json = JSON.stringify(message);
-  const header = Buffer.from(`Content-Length: ${Buffer.byteLength(json, "utf8")}\r\n\r\n`, "utf8");
-  process.stdout.write(header);
-  process.stdout.write(json);
+  process.stdout.write(`${JSON.stringify(message)}\n`);
 }
 
 function toolResult(id, text, isError = false) {
@@ -102,6 +102,7 @@ async function callTool(name, args) {
     return JSON.stringify({ capability: args.capability, allowed, catalog: CAPABILITY_CATALOG.map((item) => item.id) }, null, 2);
   }
   if (name === "lexable_local_audit") {
+    await client.assertCan("accessibility.audit");
     const result = await auditPaths([args?.path || "."], { cwd: process.cwd() });
     return formatAudit(result);
   }
@@ -111,15 +112,22 @@ async function callTool(name, args) {
   throw new Error(`Unknown tool: ${name}`);
 }
 
+function negotiateProtocolVersion(requested) {
+  if (typeof requested === "string" && SUPPORTED_PROTOCOL_VERSIONS.includes(requested)) {
+    return requested;
+  }
+  return "2025-03-26";
+}
+
 async function handle(message) {
   if (message.method === "initialize") {
     return {
       jsonrpc: "2.0",
       id: message.id,
       result: {
-        protocolVersion: "2024-11-05",
-        serverInfo: { name: "lexable", version: "1.1.0" },
-        capabilities: { tools: {} },
+        protocolVersion: negotiateProtocolVersion(message.params?.protocolVersion),
+        serverInfo: { name: "lexable", version: PLUGIN_VERSION },
+        capabilities: { tools: { listChanged: false } },
       },
     };
   }
@@ -134,11 +142,17 @@ async function handle(message) {
       const text = await callTool(message.params.name, message.params.arguments || {});
       return toolResult(message.id, text);
     } catch (error) {
+      if (error instanceof LexableNotEntitled) {
+        return toolResult(message.id, error.message, true);
+      }
       return toolResult(message.id, error.message || String(error), true);
     }
   }
   if (message.method === "ping") {
     return { jsonrpc: "2.0", id: message.id, result: {} };
+  }
+  if (message.id === undefined) {
+    return null;
   }
   return {
     jsonrpc: "2.0",
@@ -147,43 +161,75 @@ async function handle(message) {
   };
 }
 
-async function processBuffer(buffer) {
+function extractMessages(buffer) {
+  const messages = [];
   let remaining = buffer;
-  while (true) {
+
+  while (remaining.length > 0) {
+    if (remaining[0] === 0x7b) {
+      const newline = remaining.indexOf(0x0a);
+      if (newline === -1) {
+        break;
+      }
+      const line = remaining.slice(0, newline).toString("utf8").replace(/\r$/, "");
+      remaining = remaining.slice(newline + 1);
+      if (line.trim() === "") {
+        continue;
+      }
+      messages.push(JSON.parse(line));
+      continue;
+    }
+
     const headerEnd = remaining.indexOf("\r\n\r\n");
     if (headerEnd === -1) {
-      return remaining;
+      break;
     }
     const header = remaining.slice(0, headerEnd).toString("utf8");
     const match = header.match(/Content-Length:\s*(\d+)/i);
     if (!match) {
-      throw new Error("Missing Content-Length header");
+      const skip = remaining.indexOf(0x0a);
+      if (skip === -1) {
+        break;
+      }
+      remaining = remaining.slice(skip + 1);
+      continue;
     }
     const length = Number(match[1]);
     const bodyStart = headerEnd + 4;
     if (remaining.length < bodyStart + length) {
-      return remaining;
+      break;
     }
     const body = remaining.slice(bodyStart, bodyStart + length).toString("utf8");
     remaining = remaining.slice(bodyStart + length);
-    const message = JSON.parse(body);
-    const response = await handle(message);
-    if (response) {
-      writeMessage(response);
-    }
+    messages.push(JSON.parse(body));
   }
+
+  return { messages, remaining };
 }
 
 let stdinBuffer = Buffer.alloc(0);
-process.stdin.on("data", async (chunk) => {
-  stdinBuffer = Buffer.concat([stdinBuffer, chunk]);
-  try {
-    stdinBuffer = await processBuffer(stdinBuffer);
-  } catch (error) {
-    writeMessage({
-      jsonrpc: "2.0",
-      error: { code: -32700, message: error.message },
-    });
-  }
-});
+let queue = Promise.resolve();
 
+function enqueue(chunk) {
+  queue = queue
+    .then(async () => {
+      stdinBuffer = Buffer.concat([stdinBuffer, chunk]);
+      const extracted = extractMessages(stdinBuffer);
+      stdinBuffer = extracted.remaining;
+      for (const message of extracted.messages) {
+        const response = await handle(message);
+        if (response) {
+          writeMessage(response);
+        }
+      }
+    })
+    .catch((error) => {
+      process.stderr.write(`lexable MCP: ${error.message || error}\n`);
+    });
+}
+
+process.stdin.on("data", (chunk) => enqueue(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+process.stdin.on("end", () => {
+  queue.finally(() => process.exit(0));
+});
+process.stdin.resume();

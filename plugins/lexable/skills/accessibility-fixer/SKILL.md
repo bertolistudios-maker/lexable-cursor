@@ -12,7 +12,8 @@ description: Fix detected accessibility issues in source with the smallest safe 
 
 ## Workflow
 
-1. Identify issues from the current audit, the local helper, or a fresh pass over the files the user named. Do not wander into unrelated files.
+1. Confirm `can(accessibility.fix)` is true. If not, stop and send the user to `/lexable-login` or the Lexable dashboard billing page. Do not edit files.
+2. Identify issues from the current audit, the local helper, or a fresh pass over the files the user named. Do not wander into unrelated files.
 2. Before editing, list each file and the change you will make.
 3. Apply the smallest remediation that uses native HTML semantics. Do not add ARIA when a native element works.
 4. Preserve behavior and visual design. Do not restyle the page to "look more accessible" unless contrast or focus visibility in source is the issue.

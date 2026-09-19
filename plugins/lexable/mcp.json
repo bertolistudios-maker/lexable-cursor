@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "lexable": {
+      "type": "stdio",
       "command": "node",
       "args": ["${CURSOR_PLUGIN_ROOT}/src/mcp/server.mjs"]
     }

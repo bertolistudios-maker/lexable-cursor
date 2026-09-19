@@ -12,7 +12,7 @@ description: Audit web UI source for accessibility issues, map supported finding
 
 ## Workflow
 
-1. Run plugin-local status (`lexable_status` MCP tool or `node plugins/lexable/src/cli.mjs status`) so the report can state authentication mode. If development mode is on, label results as mock account data.
+1. Run plugin-local status (`lexable_status` MCP tool or `node plugins/lexable/src/cli.mjs status`) so the report can state authentication mode. If development mode is on, label results as mock account data. If `can(accessibility.audit)` is false, stop and tell the user to `/lexable-login` or to buy/change the plan on the Lexable dashboard. Do not invent findings.
 2. Run plugin-local static analysis (`lexable_local_audit` or `node plugins/lexable/src/cli.mjs audit <paths>`). Treat those findings as candidates, not as a complete audit.
 3. Inspect the relevant source yourself. Do not stop at the helper output. Search HTML/JSX/TSX/Vue/Svelte for controls, forms, images, dialogs, and dynamic UI.
 4. For each issue, record file and line when possible, severity, a supported WCAG criterion, why it matters, remediation, and verification type.

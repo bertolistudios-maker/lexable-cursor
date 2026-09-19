@@ -32,7 +32,7 @@ test("marketplace and plugin manifests are valid and consistent", async () => {
   assert.equal(marketplace.owner.name, "Bertoli Studios");
   assert.equal(plugin.name, "lexable");
   assert.equal(plugin.displayName, "Lexable Accessibility");
-  assert.equal(plugin.version, "1.1.0");
+  assert.equal(plugin.version, "1.2.0");
   assert.equal(marketplace.plugins[0].name, plugin.name);
   assert.match(plugin.version, /^\d+\.\d+\.\d+$/);
   assert.ok(plugin.keywords.includes("wcag-2.2"));

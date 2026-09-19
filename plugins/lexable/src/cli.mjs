@@ -5,7 +5,7 @@ import process from "node:process";
 import { createLexableClient } from "./lexable/index.mjs";
 import { LexableBackendUnavailable } from "./lexable/api/client.mjs";
 import { auditPaths } from "./audit/local-audit.mjs";
-import { formatAudit, formatStatus } from "./format.mjs";
+import { formatAudit, formatStatus, LexableNotEntitled } from "./format.mjs";
 
 function print(text) {
   process.stdout.write(`${text}\n`);
@@ -165,6 +165,7 @@ async function main() {
     }
 
     if (command === "audit") {
+      await client.assertCan("accessibility.audit");
       const targets = positionals.length > 0 ? positionals : ["."];
       const result = await auditPaths(targets, { cwd: process.cwd() });
       await client.track("audit");
@@ -195,6 +196,10 @@ async function main() {
     process.exitCode = 1;
     if (error instanceof LexableBackendUnavailable) {
       print("REQUIRES LEXABLE BACKEND");
+      print(error.message);
+      return;
+    }
+    if (error instanceof LexableNotEntitled) {
       print(error.message);
       return;
     }

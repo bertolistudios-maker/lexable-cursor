@@ -43,11 +43,15 @@ Required fields (all absolute HTTPS URLs):
   "entitlements_endpoint": "https://…",
   "logout_endpoint": "https://…",
   "scan_endpoint": "https://…",
-  "mcp_url": "https://…"
+  "events_endpoint": "https://…",
+  "dashboard_url": "https://…/dashboard",
+  "billing_url": "https://…/billing",
+  "register_url": "https://…/register",
+  "client_id": "lexable-cursor"
 }
 ```
 
-`logout_endpoint`, `scan_endpoint`, and `mcp_url` may be omitted until those features ship. Missing `scan_endpoint` means remote scan stays `REQUIRES_LEXABLE_BACKEND`.
+`logout_endpoint`, `scan_endpoint`, `events_endpoint`, `dashboard_url`, `billing_url`, and `register_url` may be omitted until those features ship. Missing `scan_endpoint` means remote scan stays `REQUIRES_LEXABLE_BACKEND`. The plugin still uses `{API}/register` and `{API}/billing` as fallbacks so users can create an account and buy a plan on the Lexable dashboard.
 
 ## Browser login (no passwords in Cursor)
 
@@ -55,7 +59,7 @@ Implement OAuth 2.1 authorization code with PKCE:
 
 1. Cursor CLI starts a loopback callback on `127.0.0.1`.
 2. Browser opens `authorization_endpoint` with `client_id`, `redirect_uri`, `state`, `code_challenge`.
-3. User authenticates on Lexable-owned pages.
+3. User authenticates on Lexable-owned pages. If they have no account, they register, verify email, and choose a plan using the same dashboard billing as the website (Starter trial or Pro/Agency checkout). Then they authorize the plugin.
 4. Lexable redirects to the loopback `redirect_uri` with `code`.
 5. Plugin exchanges `code` at `token_endpoint`.
 6. Plugin calls `userinfo_endpoint`, `subscription_endpoint`, and `entitlements_endpoint` with the access token.

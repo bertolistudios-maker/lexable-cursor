@@ -4,6 +4,13 @@ import path from "node:path";
 export const PLUGIN_NAME = "lexable";
 export const PLUGIN_DISPLAY_NAME = "Lexable Accessibility";
 export const PUBLISHER = "Bertoli Studios";
+export const PLUGIN_VERSION = "1.2.0";
+export const DEFAULT_APP_URL = "https://app.lex-able.com";
+
+export function lexableWebUrl(config, path) {
+  const base = String(config?.apiBaseUrl || DEFAULT_APP_URL).replace(/\/+$/, "") || DEFAULT_APP_URL;
+  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+}
 
 export function defaultSessionPath() {
   return path.join(os.homedir(), ".lexable", "cursor-plugin-session.json");

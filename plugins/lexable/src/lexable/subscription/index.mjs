@@ -2,6 +2,7 @@ import { can as hasCapability, CAPABILITY_CATALOG } from "../capabilities.mjs";
 import { getSessionSnapshot } from "../auth/index.mjs";
 import { getLiveProvider } from "../api/live-provider.mjs";
 import { LOCAL_CAPABILITIES } from "../capabilities.mjs";
+import { lexableWebUrl } from "../config.mjs";
 
 export { hasCapability as can };
 
@@ -54,6 +55,9 @@ export async function getStatus(config) {
     entitlements,
     catalog: CAPABILITY_CATALOG,
     apiBaseUrlConfigured: Boolean(config.apiBaseUrl),
+    registerUrl: lexableWebUrl(config, "/register"),
+    billingUrl: lexableWebUrl(config, "/billing"),
+    dashboardUrl: lexableWebUrl(config, "/dashboard"),
     warning: statusWarning(config, session),
   };
 }

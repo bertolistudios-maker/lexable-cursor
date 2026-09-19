@@ -22,6 +22,8 @@ node plugins/lexable/src/cli.mjs status
 Not authenticated.
 
 Run /lexable-login to connect your Lexable account.
+If you do not have an account, the same browser flow lets you register on Lexable.
+Plans are purchased on the Lexable dashboard, same as using Lexable on the web.
 ```
 
 4. If authenticated, keep this shape:
@@ -41,3 +43,5 @@ Available:
 ```
 
 Access comes from entitlements (`can(capability)`), not from a local `if (plan === "pro")` check. If development mode is on, the first line after LEXABLE must state that the session is a mock.
+
+If a paid capability is missing, tell the user to buy or change the plan on the Lexable dashboard billing page. Do not invent a plan upgrade inside Cursor.
