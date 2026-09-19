@@ -11,12 +11,12 @@ Until that contract is live, the plugin uses an isolated adapter. Production log
 | Plugin-local rules, skills, agent, commands | Implemented |
 | Local static analysis helper | Implemented |
 | Development mock login (browser, no password) | Mocked, explicit opt-in |
-| Real OAuth/browser login | Requires Lexable backend |
-| Server-side entitlements | Requires Lexable backend |
-| Lexable engine remote scan | Requires Lexable backend |
-| Hosted advanced reports | Requires Lexable backend |
+| Real OAuth/browser login | Implemented against `https://app.lex-able.com` |
+| Server-side entitlements | Implemented (`/plugin/v1/entitlements`) |
+| Existing Lexable scan listing | Implemented (`/plugin/v1/scans`) |
+| Usage events for admin stats | Implemented (`/plugin/v1/events`) |
 
-The plugin **does not invent API URLs**. It only calls `LEXABLE_API_BASE_URL` when that value is configured by operators, and only after fetching a discovery document.
+The plugin calls `https://app.lex-able.com` by default. Override only for staging.
 
 ## Discovery document
 
@@ -26,10 +26,10 @@ Publish a JSON document at:
 {LEXABLE_API_BASE_URL}{LEXABLE_DISCOVERY_PATH}
 ```
 
-Default path (not live today):
+Default path:
 
 ```text
-/.well-known/lexable-plugin.json
+https://app.lex-able.com/.well-known/lexable-plugin.json
 ```
 
 Required fields (all absolute HTTPS URLs):

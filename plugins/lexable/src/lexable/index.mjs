@@ -2,7 +2,7 @@ import { loadConfig } from "./config.mjs";
 import { login, logout, getSessionSnapshot } from "./auth/index.mjs";
 import { can, getEntitlements, getStatus, getSubscription } from "./subscription/index.mjs";
 import { getLiveProvider } from "./api/live-provider.mjs";
-import { LexableBackendUnavailable } from "./api/client.mjs";
+import { authorizedPost, fetchDiscovery } from "./api/client.mjs";
 
 export async function createLexableClient(env = process.env) {
   const config = loadConfig(env);
@@ -15,39 +15,53 @@ export async function createLexableClient(env = process.env) {
     getEntitlements: () => getEntitlements(config),
     getStatus: () => getStatus(config),
     can: async (capability) => can(await getEntitlements(config), capability),
+    track: async (event) => {
+      const session = await getSessionSnapshot(config);
+      if (!session.authenticated || session.mock || !session.tokens?.access_token) {
+        return { ok: false, skipped: true };
+      }
+      try {
+        const discovery = await fetchDiscovery(config);
+        if (!discovery.document.events_endpoint) {
+          return { ok: false, skipped: true };
+        }
+        return authorizedPost(discovery.document.events_endpoint, session.tokens.access_token, {
+          event,
+          plugin_version: "1.1.0",
+        });
+      } catch {
+        return { ok: false, skipped: true };
+      }
+    },
     remoteScan: async () => {
       const entitled = can(await getEntitlements(config), "lexable.remote_scan");
       if (!entitled) {
         return {
           status: "NOT_ENTITLED",
-          message: "Remote Lexable scan requires the lexable.remote_scan entitlement from the Lexable API.",
+          message: "Lexable remote scan requires the lexable.remote_scan entitlement from the Lexable API.",
         };
       }
       if (config.devMode) {
         return {
           status: "REQUIRES_LEXABLE_BACKEND",
           message:
-            "Development mode granted the entitlement, but there is no Lexable scanner API connected. This plugin does not invent scan endpoints.",
+            "Development mode granted the entitlement, but mock mode does not call the Lexable scanner API.",
         };
+      }
+      const session = await getSessionSnapshot(config);
+      if (!session.tokens?.access_token) {
+        return { status: "NOT_ENTITLED", message: "Not authenticated." };
       }
       const live = getLiveProvider(config);
       try {
         const discovery = await live.discover();
-        if (!discovery.document.scan_endpoint) {
-          throw new LexableBackendUnavailable(
-            "Discovery document has no scan_endpoint. Remote scan is not available."
-          );
-        }
+        return await live.remoteScan(session.tokens.access_token, discovery);
       } catch (error) {
         return {
           status: "REQUIRES_LEXABLE_BACKEND",
           message: error.message,
         };
       }
-      return {
-        status: "REQUIRES_LEXABLE_BACKEND",
-        message: "Scan endpoint is listed but not implemented by this plugin version.",
-      };
     },
   };
 }

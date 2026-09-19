@@ -88,7 +88,10 @@ async function main() {
         return;
       }
       if (!client.config.devMode) {
+        print("LEXABLE LOGIN");
+        print("Opening the Lexable site in your browser. Sign in there. The plugin never asks for a password.");
         await client.login(options);
+        print(formatStatus(await client.getStatus()));
         return;
       }
       if (flags.noBrowser && !flags.persona) {
@@ -164,6 +167,7 @@ async function main() {
     if (command === "audit") {
       const targets = positionals.length > 0 ? positionals : ["."];
       const result = await auditPaths(targets, { cwd: process.cwd() });
+      await client.track("audit");
       if (flags.json) {
         printJson(result);
       } else {
@@ -174,6 +178,7 @@ async function main() {
 
     if (command === "remote-scan") {
       const result = await client.remoteScan();
+      await client.track("remote_scan");
       if (flags.json) {
         printJson(result);
       } else {

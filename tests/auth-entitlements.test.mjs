@@ -79,10 +79,11 @@ test("production ignores LEXABLE_DEV_MODE and mock sessions", async () => {
   const prod = await createLexableClient({
     LEXABLE_ENV: "production",
     LEXABLE_DEV_MODE: "true",
+    LEXABLE_API_BASE_URL: "http://127.0.0.1:1",
     LEXABLE_SESSION_PATH: sessionPath,
   });
   assert.equal(prod.config.devMode, false);
-  await assert.rejects(() => prod.login({ persona: "pro" }), /Development mode is not active|REQUIRES LEXABLE BACKEND|not available/);
+  await assert.rejects(() => prod.login({ persona: "pro" }), /Development mode is not active|REQUIRES LEXABLE BACKEND|not available|Could not reach/);
 
   await writeFile(
     sessionPath,
@@ -100,7 +101,10 @@ test("production ignores LEXABLE_DEV_MODE and mock sessions", async () => {
 });
 
 test("login without backend in non-dev mode is REQUIRES_LEXABLE_BACKEND", async () => {
-  const client = await clientWith({ LEXABLE_ENV: "production" });
+  const client = await clientWith({
+    LEXABLE_ENV: "production",
+    LEXABLE_API_BASE_URL: "http://127.0.0.1:1",
+  });
   await assert.rejects(() => client.login(), (error) => error.code === "REQUIRES_LEXABLE_BACKEND");
 });
 

@@ -118,7 +118,7 @@ async function handle(message) {
       id: message.id,
       result: {
         protocolVersion: "2024-11-05",
-        serverInfo: { name: "lexable", version: "1.0.0" },
+        serverInfo: { name: "lexable", version: "1.1.0" },
         capabilities: { tools: {} },
       },
     };

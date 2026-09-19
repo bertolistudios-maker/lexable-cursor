@@ -21,10 +21,13 @@ export function getLiveProvider(config) {
       }
       return body;
     },
-    async remoteScan() {
-      throw new LexableBackendUnavailable(
-        "Lexable remote scan is not implemented in this plugin until the backend publishes a scan endpoint in the discovery document."
-      );
+    async remoteScan(accessToken, discovery) {
+      if (!discovery.document.scan_endpoint) {
+        throw new LexableBackendUnavailable(
+          "Discovery document has no scan_endpoint. Remote scan is not available."
+        );
+      }
+      return authorizedGet(discovery.document.scan_endpoint, accessToken);
     },
   };
 }

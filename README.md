@@ -17,7 +17,7 @@ This plugin helps you:
 - apply a small remediation;
 - re-review the edited files;
 - separate statically detectable issues from runtime / manual testing;
-- plug in the real Lexable API/MCP later, without inventing endpoints today.
+- connect a real Lexable account in the browser (no password in Cursor)
 
 ## Features
 
@@ -30,13 +30,14 @@ This plugin helps you:
 | Local static helper | Detects missing names, labels, and text alternatives in HTML/JSX and similar files |
 | Auth adapter | Isolated client with `getCurrentUser`, `getSubscription`, `getEntitlements`, `login`, `logout` |
 | Development mode | Explicit mock personas: unauthorized, free, pro, agency, expired |
-| Remote Lexable scan | Adapter only — returns `REQUIRES_LEXABLE_BACKEND` until discovery exists |
+| Remote Lexable scans | Lists existing scans for the signed-in account (does not start a new crawl) |
+| Admin stats | Connected accounts and command events on admin.lex-able.com → Plugin Cursor |
 
 ## Installation
 
 1. Clone this repository.
 2. Run `npm test` (Node.js 18+).
-3. Submit or install the GitHub repository through the Cursor plugin flow (Cursor Marketplace publish, or a local plugin install pointing at `plugins/lexable`).
+3. Submit this GitHub repository at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish).
 
 Repository: https://github.com/bertolistudios-maker/lexable-cursor
 
@@ -60,15 +61,17 @@ Login is browser-based. The plugin never asks for a password in Cursor.
 Cursor → /lexable-login → Browser → Lexable authentication → token → Cursor
 ```
 
-That production flow is **not live**. The adapter refuses to guess API URLs. See [docs/BACKEND-CONTRACT.md](docs/BACKEND-CONTRACT.md).
+Production login opens `https://app.lex-able.com`. The user signs in on Lexable. Cursor stores only a bearer token locally (`~/.lexable/`), never a password.
 
-For local testing, development mode opens a **mock** authorization page. Mock sessions are labeled as mocks and are ignored when `LEXABLE_ENV=production`.
+The Lexable app must be deployed with plugin OAuth routes and the database migration. Until that deploy is live, `/lexable-login` reports that discovery is unavailable.
+
+For local testing without the API, development mode opens a **mock** authorization page. Mock sessions are labeled as mocks and are ignored when `LEXABLE_ENV=production`.
 
 ## Subscription
 
 Subscription and entitlements are **server-side**. The plugin calls `getEntitlements()` and `can("accessibility.audit")`. It does not grant paid features with `if (plan === "pro")` on local data.
 
-Until the Lexable API publishes a discovery document, only development mocks can simulate account states. A mock is not a real subscription.
+After login, entitlements come from `GET /plugin/v1/entitlements` on the Lexable API. A mock is not a real subscription.
 
 ## Free vs paid capabilities
 

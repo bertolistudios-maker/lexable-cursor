@@ -21,12 +21,17 @@ export function loadConfig(env = process.env) {
   // LEXABLE_DEV_MODE is ignored when LEXABLE_ENV=production or unset.
   const devMode = !isProduction && lexableEnv === "development" && devFlag;
 
+  const apiBaseUrl = String(env.LEXABLE_API_BASE_URL || (devMode ? "" : "https://app.lex-able.com")).replace(
+    /\/+$/,
+    ""
+  );
+
   return {
     env: lexableEnv || "unset",
     isProduction,
     devMode,
-    apiBaseUrl: String(env.LEXABLE_API_BASE_URL || "").replace(/\/+$/, ""),
-    clientId: String(env.LEXABLE_CLIENT_ID || "").trim(),
+    apiBaseUrl,
+    clientId: String(env.LEXABLE_CLIENT_ID || "lexable-cursor").trim() || "lexable-cursor",
     discoveryPath: String(env.LEXABLE_DISCOVERY_PATH || "/.well-known/lexable-plugin.json"),
     sessionPath: env.LEXABLE_SESSION_PATH || defaultSessionPath(),
   };

@@ -22,7 +22,7 @@ export async function fetchDiscovery(config) {
       method: "GET",
       headers: {
         accept: "application/json",
-        "user-agent": "lexable-cursor-plugin/1.0.0",
+        "user-agent": "lexable-cursor-plugin/1.1.0",
       },
     });
   } catch (error) {
@@ -64,7 +64,7 @@ export async function authorizedGet(url, accessToken) {
     headers: {
       accept: "application/json",
       authorization: `Bearer ${accessToken}`,
-      "user-agent": "lexable-cursor-plugin/1.0.0",
+      "user-agent": "lexable-cursor-plugin/1.1.0",
     },
   });
   if (!response.ok) {
@@ -73,4 +73,24 @@ export async function authorizedGet(url, accessToken) {
     throw error;
   }
   return response.json();
+}
+
+export async function authorizedPost(url, accessToken, body = {}) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: `Bearer ${accessToken}`,
+      "user-agent": "lexable-cursor-plugin/1.1.0",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    const error = new Error(`Lexable API request failed (${response.status}) for ${url}`);
+    error.status = response.status;
+    throw error;
+  }
+  const text = await response.text();
+  return text ? JSON.parse(text) : { ok: true };
 }

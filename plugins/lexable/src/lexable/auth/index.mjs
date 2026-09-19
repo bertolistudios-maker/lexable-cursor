@@ -1,8 +1,8 @@
 import { createMockSnapshot, unauthenticatedSnapshot } from "../api/mock-provider.mjs";
-import { getLiveProvider } from "../api/live-provider.mjs";
-import { LexableBackendUnavailable } from "../api/client.mjs";
 import { runDevBrowserLogin } from "./browser-login.mjs";
+import { runLiveBrowserLogin } from "./live-login.mjs";
 import { clearSession, readSession, writeSession } from "../session-store.mjs";
+import { authorizedPost, fetchDiscovery } from "../api/client.mjs";
 
 export async function login(config, options = {}) {
   if (config.devMode) {
@@ -10,22 +10,22 @@ export async function login(config, options = {}) {
     return writeSession(config, snapshot);
   }
 
-  const live = getLiveProvider(config);
-  try {
-    await live.discover();
-  } catch (error) {
-    if (error instanceof LexableBackendUnavailable) {
-      throw error;
-    }
-    throw new LexableBackendUnavailable(error.message);
-  }
-
-  throw new LexableBackendUnavailable(
-    "Lexable plugin discovery was found, but the authorization-code + PKCE browser flow is not wired in this plugin version until the backend contract is confirmed. See docs/BACKEND-CONTRACT.md."
-  );
+  const snapshot = await runLiveBrowserLogin(config, options);
+  return writeSession(config, snapshot);
 }
 
 export async function logout(config) {
+  const session = await readSession(config);
+  if (session.authenticated && session.mock !== true && session.tokens?.access_token && config.apiBaseUrl) {
+    try {
+      const discovery = await fetchDiscovery(config);
+      if (discovery.document.logout_endpoint) {
+        await authorizedPost(discovery.document.logout_endpoint, session.tokens.access_token, {});
+      }
+    } catch {
+      // Local logout still proceeds if revoke cannot reach the API.
+    }
+  }
   await clearSession(config);
   return unauthenticatedSnapshot();
 }
